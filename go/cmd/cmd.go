@@ -16,6 +16,7 @@ import (
 	usercorn "github.com/lunixbochs/usercorn/go"
 	"github.com/lunixbochs/usercorn/go/debug"
 	"github.com/lunixbochs/usercorn/go/models"
+	"github.com/lunixbochs/usercorn/go/python"
 	"github.com/lunixbochs/usercorn/go/ui"
 )
 
@@ -171,6 +172,7 @@ func (c *UsercornCmd) Run(argv, env []string) int {
 	startrepl := fs.Bool("repl", false, "experimental luaish repl")
 	var exec strslice
 	fs.Var(&exec, "ex", "execute luaish script(s) before starting")
+  py := fs.String("py", "", "execute a python script before starting")
 
 	cpuprofile := fs.String("cpuprofile", "", "write cpu profile to <file>")
 	memprofile := fs.String("memprofile", "", "write mem profile to <file>")
@@ -421,7 +423,9 @@ func (c *UsercornCmd) Run(argv, env []string) int {
 			defer repl.Close()
 			repl.Run()
 		}
-	}
+	} else if *py != "" {
+    python.ExecScript(corn, *py)
+  }
 	defer config.Output.Close()
 	// start executable
 	if c.RunUsercorn != nil {

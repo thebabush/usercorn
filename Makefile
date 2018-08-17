@@ -117,6 +117,15 @@ usercorn: .gopath
 	$(GOBUILD) -o usercorn ./go/cmd/main
 	$(FIXRPATH) usercorn
 
+py: .gopath
+	rm -f usercorn python_binding.a
+	#$(GOBUILD) -buildmode=c-shared -o usercorn.so ./go/cmd/main
+	python python/setup.py
+	gcc `pkg-config --cflags python` -c python_binding.c
+	ar -rcs libpython_binding.a python_binding.o
+	rm python_binding.o python_binding.c
+	$(GOBUILD) -v -o usercorn ./go/cmd/main
+
 get: .gopath
 	go get -u ${DEPS}
 
